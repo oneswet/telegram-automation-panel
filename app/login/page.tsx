@@ -36,8 +36,8 @@ export default function LoginPage() {
       }
 
       toast.success('Logged in successfully!')
-      router.push('/dashboard')
-      router.refresh()
+      // Force a full page reload to ensure NextAuth session cookies are hydrated
+      window.location.href = '/dashboard'
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred'
       toast.error(message)
