@@ -106,12 +106,12 @@ export default function DashboardLayout({
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? 'bg-[#24A1DE] text-white shadow-md'
-                    : 'text-slate-300 hover:bg-slate-800'
+                    : 'text-slate-100 hover:bg-slate-800'
                 }`}
                 title={item.name}
               >
-                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : item.requireAdmin ? 'text-indigo-400' : ''}`} />
-                {sidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
+                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : item.requireAdmin ? 'text-indigo-400' : 'text-slate-300'}`} />
+                {sidebarOpen && <span className="text-sm font-semibold">{item.name}</span>}
               </Link>
             )
           })}
@@ -121,9 +121,9 @@ export default function DashboardLayout({
         <div className="p-4 border-t border-slate-800 space-y-3">
           {sidebarOpen && session?.user?.email && (
             <div className="px-4 py-2 bg-slate-800 rounded-lg">
-              <p className="text-xs text-slate-400">Logged in as</p>
-              <p className="text-sm font-medium text-white truncate">{session.user.email}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">{session.user.role}</p>
+              <p className="text-xs text-slate-300">Logged in as</p>
+              <p className="text-sm font-bold text-white truncate">{session.user.email}</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-bold">{session.user.role}</p>
             </div>
           )}
 
@@ -132,11 +132,11 @@ export default function DashboardLayout({
             variant="ghost"
             className={`w-full flex items-center ${
               sidebarOpen ? 'justify-start px-4' : 'justify-center p-0'
-            } gap-3 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors`}
+            } gap-3 text-slate-200 hover:bg-slate-800 hover:text-white transition-colors`}
             title="Log Out"
           >
             <LogOut className="w-5 h-5 shrink-0" />
-            {sidebarOpen && <span className="text-sm font-medium">Log Out</span>}
+            {sidebarOpen && <span className="text-sm font-semibold">Log Out</span>}
           </Button>
         </div>
       </aside>
@@ -148,17 +148,17 @@ export default function DashboardLayout({
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-slate-400 hover:text-white"
+            className="text-slate-200 hover:text-white"
           >
             {sidebarOpen ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
           </Button>
 
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-white">{session?.user?.name || 'User'}</p>
-              <p className="text-xs text-slate-400">{session?.user?.role || 'Member'}</p>
+              <p className="text-sm font-bold text-white">{session?.user?.name || 'User'}</p>
+              <p className="text-xs font-semibold text-slate-300">{session?.user?.role || 'Member'}</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300">
+            <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold text-white">
               {(session?.user?.name || session?.user?.email || 'U').charAt(0).toUpperCase()}
             </div>
           </div>
