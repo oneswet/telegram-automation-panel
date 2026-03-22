@@ -10,8 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('bogos300@gmail.com')
-  const [password, setPassword] = useState('lonake300@@')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -87,11 +87,11 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="bogos300@gmail.com"
+                  placeholder="admin@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:ring-[#24A1DE] focus:border-[#24A1DE]"
                   required
                 />
               </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:ring-[#24A1DE] focus:border-[#24A1DE]"
                   required
                 />
               </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#24A1DE] hover:bg-[#1f86bb] text-white font-medium"
+                className="w-full bg-[#24A1DE] hover:bg-[#1f86bb] text-white font-medium shadow-lg hover:shadow-xl transition-all"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
@@ -134,22 +134,12 @@ export default function LoginPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    Signing in...
+                    Authenticating...
                   </span>
                 ) : (
-                  'Sign In'
+                  'Sign In Securely'
                 )}
               </Button>
-
-              <div className="pt-4 border-t border-slate-700">
-                <p className="text-xs text-slate-400 text-center">
-                  Demo Credentials:
-                  <br />
-                  <span className="text-slate-300 font-mono">bogos300@gmail.com</span>
-                  <br />
-                  <span className="text-slate-300 font-mono">lonake300@@</span>
-                </p>
-              </div>
             </form>
           </CardContent>
         </Card>
