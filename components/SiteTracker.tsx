@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-export function SiteTracker() {
+function SiteTrackerInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const trackedPath = useRef<string | null>(null);
@@ -32,4 +32,12 @@ export function SiteTracker() {
   }, [pathname, searchParams]);
 
   return null;
+}
+
+export function SiteTracker() {
+  return (
+    <Suspense fallback={null}>
+      <SiteTrackerInner />
+    </Suspense>
+  );
 }
