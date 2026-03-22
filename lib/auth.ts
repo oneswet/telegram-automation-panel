@@ -12,6 +12,17 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.telegram-session`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === "production",
+      }
+    }
+  },
   secret: process.env.NEXTAUTH_SECRET || "fallback_super_secret_for_lazy_users_123!",
   providers: [
     CredentialsProvider({
