@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
   const session = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET || "fallback_super_secret_for_lazy_users_123!",
-    cookieName: 'next-auth.telegram-session',
+    secureCookie: process.env.NODE_ENV === "production",
   })
 
   const { pathname } = request.nextUrl

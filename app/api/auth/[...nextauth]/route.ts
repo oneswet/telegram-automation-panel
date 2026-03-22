@@ -1,8 +1,9 @@
 import NextAuth from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-// Force NEXTAUTH_URL to correct domain on Netlify if user forgot to set it
-process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL || process.env.URL || "https://telegramscrape.netlify.app";
+// Brutally force NEXTAUTH_URL to production if it accidentally contains localhost in a live environment
+const isLocalhost = process.env.NEXTAUTH_URL?.includes("localhost");
+process.env.NEXTAUTH_URL = isLocalhost ? "https://telegramscrape.netlify.app" : (process.env.NEXTAUTH_URL || process.env.URL || "https://telegramscrape.netlify.app");
 
 const handler = NextAuth(authOptions)
 
