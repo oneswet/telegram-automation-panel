@@ -14,13 +14,13 @@ export class NotificationService {
       const botToken = botTokenSetting?.value
       const chatId = chatIdSetting?.value
 
-      let formattedMessage = `🚨 *SYSTEM ALERT: ${subject}*\n\n${message}`
+      let formattedMessage = `━━━━━━━━━━━━━━━━━━━━━\n${subject}\n━━━━━━━━━━━━━━━━━━━━━\n\n${message}`
       
       if (details) {
          if (typeof details === 'object') {
-           formattedMessage += `\n\n\`\`\`json\n${JSON.stringify(details, null, 2)}\n\`\`\``
+           formattedMessage += `\n\n*Diagnostic Packet:*\n\`\`\`json\n${JSON.stringify(details, null, 2)}\n\`\`\``
          } else {
-           formattedMessage += `\n\n*Diagnostic Details:*\n\`${details}\``
+           formattedMessage += `\n\n*Diagnostics:*\n_${details}_`
          }
       }
 

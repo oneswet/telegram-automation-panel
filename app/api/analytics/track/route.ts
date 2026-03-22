@@ -34,9 +34,23 @@ export async function POST(req: NextRequest) {
      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '0.0.0.0'
      const hashedIp = crypto.createHash('sha256').update(ip).digest('hex').substring(0, 16)
      
-     // Pull geo-headers automatically injected by Vercel/Cloudflare (optional fallback)
-     const country = req.headers.get('x-vercel-ip-country') || 'Unknown Country'
-     const city = req.headers.get('x-vercel-ip-city') || 'Unknown City'
+     // Fetch real Geolocation data precisely from external generic API to bypass Netlify missing headers
+     let country = 'Unknown Country'
+     let city = 'Unknown City'
+     let isp = 'Unknown ISP'
+     try {
+       if (ip !== '0.0.0.0' && ip !== '127.0.0.1' && ip !== 'localhost') {
+         const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city,isp`, { cache: 'no-store' })
+         const geoData = await geoRes.json()
+         if (geoData && geoData.status === 'success') {
+           country = geoData.country || country
+           city = geoData.city || city
+           isp = geoData.isp || isp
+         }
+       }
+     } catch (e) {
+       console.log('Geo IP Lookup failed silently')
+     }
      
      // Parse User Agent strings robustly
      const uaString = req.headers.get('user-agent') || ''
@@ -53,7 +67,7 @@ export async function POST(req: NextRequest) {
           browser,
           os,
           path: path || '/',
-          details: details || "Standard HTTP Hit"
+          details: details || `Standard HTTP Hit - ISP: ${isp}`
        }
      })
 
@@ -67,9 +81,9 @@ export async function POST(req: NextRequest) {
 
      if (visitsToday === 1) { // It's their first time hitting the servers today!
         await NotificationService.sendAdminAlert(
-           "New Target Lock (Website Hit)",
-           `📌 **Location:** ${city}, ${country}\n📱 **Device Stack:** ${os} | ${browser} (${device})\n🎯 **Entry Path:** \`${path || '/'}\`\n🔗 **Source:** ${source || 'Direct Traffic'}`,
-           "A fresh target has landed on your domain properties right now. All system sensors active."
+           "NEW TARGET LOCK (Website Hit) 🌐",
+           `📍 *Location:* ${city}, ${country}\n🏢 *ISP/Carrier:* ${isp}\n\n💻 *Device Stack:* ${os} | ${browser} (${device})\n🎯 *Entry Path:* \`${path || '/'}\`\n🔗 *Traffic Source:* ${source || 'Direct Traffic'}`,
+           "A fresh target has successfully landed on your domain properties right now. All system telemetry sensors are active and logging."
         )
      }
 
