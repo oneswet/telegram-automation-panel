@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  secret: process.env.NEXTAUTH_SECRET || "fallback_super_secret_for_lazy_users_123!",
   providers: [
     CredentialsProvider({
       name: "credentials",
