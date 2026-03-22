@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String           @id @default(cuid())
+  name            String?
+  email           String?          @unique
+  username        String?          @unique
+  password        String
+  emailVerified   DateTime?
+  image           String?
+  role            Role             @default(USER)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  accounts        Account[]
+  loginLogs       LoginLog[]
+  sessions        Session[]
+  campaigns       Campaign[]
+  telegramMembers TelegramMember[]
+  messageLogs     MessageLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  ip        String?
+  userAgent String?
+  status    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TelegramAccount {
+  id          String            @id @default(cuid())
+  phone       String            @unique
+  name        String?
+  username    String?
+  apiId       String?
+  apiHash     String?
+  session     String?
+  status      AccountStatus     @default(ACTIVE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  campaigns   CampaignAccount[]
+  messageLogs MessageLog[]
+}
+
+model TelegramGroup {
+  id           String      @id @default(cuid())
+  link         String      @unique
+  telegramId   String?     @unique
+  username     String?
+  title        String?
+  membersCount Int         @default(0)
+  status       GroupStatus @default(UNCHECKED)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Campaign {
+  id              String            @id @default(cuid())
+  userId          String?
+  name            String
+  description     String?
+  messageTemplate String            @db.Text
+  intervalMin     Int               @default(30)
+  intervalMax     Int               @default(60)
+  status          CampaignStatus    @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  accounts        CampaignAccount[]
+  members         TelegramMember[]
+  messageLogs     MessageLog[]
+  user            User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TelegramMember {
+  id            String       @id @default(cuid())
+  userId        String?
+  username      String?
+  firstName     String?
+  lastName      String?
+  phone         String?
+  telegramId    String       @unique
+  campaignId    String?
+  sourceGroupId String?
+  status        String       @default("UNCHECKED")
+  lastSeenAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  campaign      Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  user          User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageLogs   MessageLog[]
+}
+
+model CampaignAccount {
+  campaignId        String
+  telegramAccountId String
+  telegramAccount   TelegramAccount @relation(fields: [telegramAccountId], references: [id], onDelete: Cascade)
+  campaign          Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@id([campaignId, telegramAccountId])
+}
+
+model MessageLog {
+  id                String          @id @default(cuid())
+  userId            String?
+  campaignId        String
+  telegramAccountId String
+  memberId          String
+  status            MessageStatus
+  errorMessage      String?         @db.Text
+  sentAt            DateTime        @default(now())
+  member            TelegramMember  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  telegramAccount   TelegramAccount @relation(fields: [telegramAccountId], references: [id], onDelete: Cascade)
+  campaign          Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user              User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+}
+
+model NotificationLog {
+  id        String   @id @default(cuid())
+  type      String
+  content   String   @db.Text
+  recipient String?
+  status    String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum AccountStatus {
+  ACTIVE
+  LIMITED
+  BANNED
+  ERROR
+}
+
+enum GroupStatus {
+  UNCHECKED
+  VALID
+  INVALID
+}
+
+enum CampaignStatus {
+  PENDING
+  RUNNING
+  PAUSED
+  COMPLETED
+  STOPPED
+}
+
+enum MessageStatus {
+  SENT
+  FAILED
+}
+
+model SiteVisit {
+  id        String   @id @default(cuid())
+  ipHash    String
+  country   String?
+  city      String?
+  source    String?
+  device    String?
+  browser   String?
+  os        String?
+  path      String?
+  details   String?
+  createdAt DateTime @default(now())
+}

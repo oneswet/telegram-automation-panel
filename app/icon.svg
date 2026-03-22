@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="matrix-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#24A1DE" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+    <linearGradient id="neon-glow" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <filter id="hyperglow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="25" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="512" height="512" rx="128" fill="#020617" />
+  <rect width="512" height="512" rx="128" fill="url(#matrix-grad)" opacity="0.1" />
+
+  <!-- Geometric Abstract Network Matrix backdrop -->
+  <path d="M128 128 L384 128 L256 384 Z" fill="none" stroke="url(#neon-glow)" stroke-width="8" opacity="0.4" />
+  <circle cx="128" cy="128" r="16" fill="#22D3EE" opacity="0.5" />
+  <circle cx="384" cy="128" r="16" fill="#A855F7" opacity="0.5" />
+  <circle cx="256" cy="384" r="16" fill="#6366F1" opacity="0.5" />
+
+  <!-- The core dynamic paper plane -->
+  <path filter="url(#hyperglow)" fill="url(#matrix-grad)" d="M475.2 25.4L20.8 200.5c-20 7.7-19.6 28 .3 34.2l117 38.3 270.2-170c12.7-7.7 24.4-3.5 14.8 5l-219 197.6-6.4 97c9.4 0 13.6-4.3 18.8-9.4l45.2-43.8 94.1 69.5c17.3 9.6 29.8 4.6 34.1-15.6l61.7-291C456.9 8.2 435-5.3 475.2 25.4z" />
+</svg>
