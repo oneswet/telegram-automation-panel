@@ -33,7 +33,10 @@ export default function DashboardPage() {
   const [recentLogs, setRecentLogs] = useState<RecentLog[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     if (status === 'authenticated') {
       fetchDashboardData();
     }
@@ -53,7 +56,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="space-y-8 animate-pulse">
         <div className="h-10 w-64 bg-slate-800/50 rounded-lg" />
