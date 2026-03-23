@@ -10,6 +10,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const tAccountWhere: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
+    const cWhere: any = session.user.role === 'ADMIN' ? { status: "RUNNING" } : { status: "RUNNING", userId: session.user.id }
+    const mWhere: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
+    const lWhere: any = session.user.role === 'ADMIN' ? { status: "SENT" } : { status: "SENT", userId: session.user.id }
+    const rLWhere: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
+
     const [
       totalAccounts,
       activeCampaigns,
@@ -17,12 +23,12 @@ export async function GET(req: NextRequest) {
       totalMessages,
       recentLogs
     ] = await Promise.all([
-      prisma.telegramAccount.count(), // Accounts don't have userId currently, they are global available
-      prisma.campaign.count({ where: { status: "RUNNING", userId: session.user.id } }),
-      prisma.telegramMember.count({ where: { userId: session.user.id } }),
-      prisma.messageLog.count({ where: { status: "SENT", userId: session.user.id } }),
+      prisma.telegramAccount.count({ where: tAccountWhere }),
+      prisma.campaign.count({ where: cWhere }),
+      prisma.telegramMember.count({ where: mWhere }),
+      prisma.messageLog.count({ where: lWhere }),
       prisma.messageLog.findMany({
-        where: { userId: session.user.id },
+        where: rLWhere,
         orderBy: { sentAt: "desc" },
         take: 5,
         include: {

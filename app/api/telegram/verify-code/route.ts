@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
         username: me.username || null,
         apiId: String(apiId),
         apiHash: apiHash,
+        userId: session.user.id,
       },
       create: {
         phone,
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
         username: me.username || null,
         apiId: String(apiId),
         apiHash: apiHash,
+        userId: session.user.id,
       },
     })
 

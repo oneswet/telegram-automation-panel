@@ -10,7 +10,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const whereClause = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
+    
     const accounts = await prisma.telegramAccount.findMany({
+      where: whereClause,
       orderBy: { createdAt: "desc" },
     })
     return NextResponse.json(accounts)
@@ -32,8 +35,10 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await prisma.telegramAccount.delete({
-      where: { id },
+    const whereClause = session.user.role === 'ADMIN' ? { id } : { id, userId: session.user.id }
+    
+    await prisma.telegramAccount.deleteMany({
+      where: whereClause,
     })
     return NextResponse.json({ success: true })
   } catch (error: any) {

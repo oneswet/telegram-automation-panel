@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   const limit = parseInt(searchParams.get("limit") || "100", 10)
 
   try {
-    const whereClause: any = { userId: session.user.id }
+    const whereClause: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
     
     if (campaignId && campaignId !== "ALL") {
       whereClause.campaignId = campaignId
@@ -111,18 +111,19 @@ export async function DELETE(req: NextRequest) {
     if (bulkIdsStr) {
        const idsObj = JSON.parse(bulkIdsStr);
        if (Array.isArray(idsObj) && idsObj.length > 0) {
+          const bulkWhere: any = session.user.role === 'ADMIN' ? { id: { in: idsObj } } : { id: { in: idsObj }, userId: session.user.id }
           const deleted = await prisma.telegramMember.deleteMany({
-             where: { id: { in: idsObj }, userId: session.user.id }
+             where: bulkWhere
           })
           return NextResponse.json({ success: true, count: deleted.count })
        }
     }
 
     if (deleteAll === "true") {
-      const where: any = { userId: session.user.id }
-      if (campaignId && campaignId !== "ALL") where.campaignId = campaignId;
+      const allWhere: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
+      if (campaignId && campaignId !== "ALL") allWhere.campaignId = campaignId;
       
-      const deleted = await prisma.telegramMember.deleteMany({ where })
+      const deleted = await prisma.telegramMember.deleteMany({ where: allWhere })
       return NextResponse.json({ success: true, count: deleted.count })
     }
 
@@ -130,8 +131,9 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Member ID is required" }, { status: 400 })
     }
 
+    const singleWhere: any = session.user.role === 'ADMIN' ? { id } : { id, userId: session.user.id }
     await prisma.telegramMember.deleteMany({
-      where: { id, userId: session.user.id },
+      where: singleWhere,
     })
     return NextResponse.json({ success: true })
   } catch (error: any) {

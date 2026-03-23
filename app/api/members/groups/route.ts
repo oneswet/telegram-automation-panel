@@ -10,13 +10,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Get distinct source groups with counts
+    const whereClause: any = session.user.role === 'ADMIN' 
+      ? { sourceGroupId: { not: null } } 
+      : { userId: session.user.id, sourceGroupId: { not: null } }
+
     const groups = await prisma.telegramMember.groupBy({
       by: ['sourceGroupId'],
-      where: { 
-        userId: session.user.id,
-        sourceGroupId: { not: null }
-      },
+      where: whereClause,
       _count: { _all: true }
     })
 

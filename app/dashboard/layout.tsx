@@ -19,7 +19,7 @@ import {
   Settings,
   Search,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const navigationItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -59,6 +59,27 @@ export default function DashboardLayout({
       </div>
     )
   }
+
+  // Hard UI Lockout: Block unauthorized users from manually navigating into strictly Admin-level control modules
+  const adminProtectedRoutes = ['/dashboard/settings', '/dashboard/analytics', '/dashboard/notifications', '/dashboard/seo', '/dashboard/admin'];
+  if (status === 'authenticated' && session?.user?.role !== 'ADMIN' && adminProtectedRoutes.some(route => pathname.startsWith(route))) {
+    if (typeof window !== 'undefined') window.location.href = '/dashboard';
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-mono text-sm">
+        <ShieldCheck className="w-5 h-5 text-red-500 mr-2" /> Security Lock: Unauthorized access protocol detected. Evacuating...
+      </div>
+    );
+  }
+
+  // Autonomous Background Worker Polling
+  // Instantly drops to background queue to iteratively process campaigns without Netlify timeouts
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    const workerPulse = setInterval(() => {
+      fetch('/api/cron/process-campaigns').catch(() => {});
+    }, 10000);
+    return () => clearInterval(workerPulse);
+  }, [status]);
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/login' })

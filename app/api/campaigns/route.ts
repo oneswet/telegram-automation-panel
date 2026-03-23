@@ -10,8 +10,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const getWhere: any = session.user.role === 'ADMIN' ? {} : { userId: session.user.id }
     const campaigns = await prisma.campaign.findMany({
-      where: { userId: session.user.id },
+      where: getWhere,
       orderBy: { createdAt: "desc" },
       include: {
         accounts: { include: { telegramAccount: true } },
@@ -61,6 +62,31 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { id, status } = await req.json()
+
+  if (!id || !status) {
+    return NextResponse.json({ error: "Campaign ID and status are required parameters." }, { status: 400 })
+  }
+
+  try {
+    const putWhere: any = session.user.role === 'ADMIN' ? { id } : { id, userId: session.user.id }
+    await prisma.campaign.updateMany({
+      where: putWhere,
+      data: { status },
+    })
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    console.error("Update campaign status error:", error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) {
@@ -75,8 +101,9 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await prisma.campaign.delete({
-      where: { id, userId: session.user.id },
+    const delWhere: any = session.user.role === 'ADMIN' ? { id } : { id, userId: session.user.id }
+    await prisma.campaign.deleteMany({
+      where: delWhere,
     })
     return NextResponse.json({ success: true })
   } catch (error: any) {
