@@ -62,7 +62,7 @@ export default function DashboardLayout({
 
   // Hard UI Lockout: Block unauthorized users from manually navigating into strictly Admin-level control modules
   const adminProtectedRoutes = ['/dashboard/settings', '/dashboard/analytics', '/dashboard/notifications', '/dashboard/seo', '/dashboard/admin'];
-  if (status === 'authenticated' && session?.user?.role !== 'ADMIN' && adminProtectedRoutes.some(route => pathname.startsWith(route))) {
+  if (status === 'authenticated' && session?.user?.role !== 'ADMIN' && pathname && adminProtectedRoutes.some(route => pathname.startsWith(route))) {
     if (typeof window !== 'undefined') window.location.href = '/dashboard';
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-mono text-sm">
